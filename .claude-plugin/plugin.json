@@ -1,0 +1,11 @@
+{
+  "name": "project-guard",
+  "description": "프로젝트 검증 워크플로우 자동화: lint, test, type-check를 하드 강제하는 Claude Code 플러그인",
+  "version": "1.0.0",
+  "author": {
+    "name": "ted"
+  },
+  "license": "MIT",
+  "keywords": ["lint", "test", "verification", "workflow", "guard"],
+  "skills": ["./skills/project-guard"]
+}

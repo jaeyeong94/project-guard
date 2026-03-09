@@ -1,0 +1,20 @@
+{
+  "name": "project-guard",
+  "id": "project-guard",
+  "owner": {
+    "name": "ted"
+  },
+  "metadata": {
+    "description": "프로젝트 검증 워크플로우 자동화 플러그인 — Edit/Write 후 자동 lint, git commit 시 lint+type-check+test 강제",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "project-guard",
+      "source": "./",
+      "description": "lint, test, type-check를 하드 강제하는 검증 워크플로우",
+      "version": "1.0.0",
+      "category": "workflow"
+    }
+  ]
+}
