@@ -1,62 +1,72 @@
 # project-guard
 
-Claude Code 플러그인 — 코드 작성 시 lint, type-check, test를 자동 강제합니다.
+A Claude Code plugin that automatically enforces lint, type-check, and test on every code change.
 
-## 설치
+## Install
 
 ```bash
-# 1. 마켓플레이스 등록
+# 1. Register the marketplace
 claude plugin marketplace add jaeyeong94/project-guard
 
-# 2. 플러그인 설치
+# 2. Install the plugin
 claude plugin install project-guard@project-guard-marketplace
 ```
 
-## 무엇을 하는가
+## What It Does
 
-### 파일 수정 시 — 자동 lint
+### Auto-lint on file changes
 
-Edit/Write로 파일을 수정하면 해당 파일에 lint가 자동 실행됩니다. 에러가 있으면 Claude에게 전달되어 즉시 수정합니다.
+When Claude edits or writes a file, the plugin automatically runs lint on that file. If there are errors, they are fed back to Claude for immediate fixing.
 
-### git commit 시 — lint + type-check + test 강제
+### Block commits on failure
 
-`git commit`을 시도하면 staged 파일에 대해 lint, type-check, test를 실행합니다. 하나라도 실패하면 커밋이 차단됩니다.
+When Claude attempts `git commit`, the plugin runs lint, type-check, and test against staged files. If any check fails, the commit is blocked.
 
-### 세션 시작 시 — 프로젝트 컨텍스트 제공
+### Project context on session start
 
 ```
-[project-guard] 프로젝트 컨텍스트
-├─ 스택: TypeScript (Next.js) + bun
+[project-guard] Project Context
+├─ Stack: TypeScript (Next.js) + bun
 ├─ Scripts: dev: next dev, build: next build, test: vitest, lint: eslint .
-├─ 미커밋 변경: 5개 파일
-├─ TODO: 12개, FIXME/HACK: 3개
-└─ 검증 워크플로우: 설정됨 ✅
+├─ Uncommitted changes: 5 files
+├─ TODO: 12, FIXME/HACK: 3
+└─ Verification workflow: configured ✅
 ```
 
-스택, 패키지 매니저, 프레임워크, 주요 scripts, 미커밋 변경, TODO/FIXME 카운트를 감지하여 Claude에게 프로젝트 상태를 전달합니다.
+On session start, the plugin detects the project's stack, package manager, framework, available scripts, uncommitted changes, and TODO/FIXME counts — then passes this context to Claude.
 
-### `/project-guard` 스킬 — 프로젝트별 설정
+### `/project-guard` skill — per-project setup
 
-프로젝트의 tech stack을 감지하고 `CLAUDE.md`에 lint, test, type-check 명령을 설정합니다.
+Detects the project's tech stack and writes lint, test, and type-check commands into the project's `CLAUDE.md`.
 
-## 지원 스택
+## Supported Stacks
 
-| 스택 | Lint | Type-check | Test |
-|------|------|-----------|------|
-| JavaScript/TypeScript | ESLint | tsc --noEmit | package.json scripts.test |
+| Stack | Lint | Type-check | Test |
+|-------|------|-----------|------|
+| JavaScript / TypeScript | ESLint | tsc --noEmit | package.json scripts.test |
 | Python | ruff / flake8 | mypy | pytest |
 | Go | golangci-lint / go vet | — | go test |
 | Rust | cargo clippy | — | cargo test |
 
-패키지 매니저는 bun > pnpm > yarn > npm 순서로 자동 감지합니다.
+Package manager auto-detection order: bun > pnpm > yarn > npm.
 
-## 업데이트
+## Update
 
 ```bash
 claude plugin marketplace update project-guard-marketplace
 claude plugin update project-guard@project-guard-marketplace
 ```
 
-## 라이선스
+## How It Works
+
+The plugin uses Claude Code's hook system with `exit 2 + stderr` to communicate with Claude:
+
+| Hook | Trigger | Action |
+|------|---------|--------|
+| **PostToolUse** | After Edit/Write | Lint the changed file |
+| **PreToolUse** | Before git commit | Run lint + type-check + test on staged files |
+| **SessionStart** | Session start | Detect project context and verification status |
+
+## License
 
 MIT
